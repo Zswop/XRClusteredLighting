@@ -1,0 +1,4 @@
+[2023-02-01 15:42:27.205] [pxr_streamer] [info] ***********  Log Begin **********
+[2023-02-01 15:42:27.205] [pxr_streamer] [info] process id= 8836
+[2023-02-01 15:42:27.205] [pxr_streamer] [debug] terminal_impl.cpp:355 QueryRemoteControllerAccessory: trigger_value = 0, grip_value = 0, this = 0xe78812a0
+[2023-02-01 15:42:27.205] [pxr_streamer] [debug] terminal_impl.cpp:355 QueryRemoteControllerAccessory: trigger_value = 0, grip_value = 0, this = 0xe78812a0
