@@ -71,8 +71,44 @@ float3 _FPCameraPosWS;
 float4x4 _FPViewMatrix;
 float4x4 _FPViewProjMatrix;
 
-#define URP_TILE_SELECT4(tileIndex) Select4(asuint(URP_Tiles[tileIndex / 4]), tileIndex % 4)
-#define URP_ZBIN_SELECT4(zBinIndex) Select4(asuint(URP_ZBins[zBinIndex / 4]), zBinIndex % 4)
+// Select uint4 component by index.
+// Helper to improve codegen for 2d indexing (data[x][y])
+// Replace:
+// data[i / 4][i % 4];
+// with:
+// select4(data[i / 4], i % 4);
+uint ClusteringSelect4(uint4 v, uint i)
+{
+    // x = 0 = 00
+    // y = 1 = 01
+    // z = 2 = 10
+    // w = 3 = 11
+    //uint mask0 = uint(int(i << 31) >> 31);
+    //uint mask1 = uint(int(i << 30) >> 31);
+    //return
+    //    (((v.w & mask0) | (v.z & ~mask0)) & mask1) |
+    //    (((v.y & mask0) | (v.x & ~mask0)) & ~mask1);
+
+    // Fix: compiler will generate wrong int_bitfieldExtract. 
+    // int int_bitfieldExtract(int value, int offset, int bits) {
+    //  return int((uint(value) >> uint(offset)) & ~(uint(0xffffffffu) << uint(bits)));
+    // }
+    return v[i];
+}
+
+#if SHADER_TARGET < 45
+uint URP_FirstBitLow(uint m)
+{
+    // http://graphics.stanford.edu/~seander/bithacks.html#ZerosOnRightFloatCast
+    return (asuint((float)(m & asuint(-asint(m)))) >> 23) - 0x7F;
+}
+#define FIRST_BIT_LOW URP_FirstBitLow
+#else
+#define FIRST_BIT_LOW firstbitlow
+#endif
+
+#define URP_TILE_SELECT4(tileIndex) ClusteringSelect4(asuint(URP_Tiles[tileIndex / 4]), tileIndex % 4)
+#define URP_ZBIN_SELECT4(zBinIndex) ClusteringSelect4(asuint(URP_ZBins[zBinIndex / 4]), zBinIndex % 4)
 #define URP_TILE_MASK(tileIndex, zBinIndex)  URP_TILE_SELECT4(tileIndex) & URP_ZBIN_SELECT4(zBinIndex)
 
 float4 TransformWorldToClusterCoord(float3 positionWS)

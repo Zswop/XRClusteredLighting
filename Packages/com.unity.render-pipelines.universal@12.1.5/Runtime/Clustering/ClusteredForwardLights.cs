@@ -204,7 +204,8 @@ namespace UnityEngine.Rendering.Universal
             {
                 float fieldOfView = camera.fieldOfView;
                 float aspectRatio = cameraData.aspectRatio;
-                float separation = camera.stereoSeparation;  //pico3 separation: 0.022
+                float separation = camera.stereoSeparation;  //separation: 0.022
+                separation = 0.064f;
                 
                 // The center eye frustum is the union of the other two frusta, pulled back and expanded.
                 // https://computergraphics.stackexchange.com/questions/1736/vr-and-frustum-culling
