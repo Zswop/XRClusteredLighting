@@ -200,7 +200,7 @@ half3 CalculateDebugShadowCascadeColor(in InputData inputData)
 half4 CalculateDebugLightingComplexityColor(in InputData inputData, in SurfaceData surfaceData)
 {
 #if USE_CLUSTERED_LIGHTING
-    int numLights = URP_FP_DIRECTIONAL_LIGHTS_COUNT;
+    int numLights = URP_FP_DIRECTIONAL_LIGHTS_COUNT + 1;
     uint entityIndex;
     ClusterIterator it = ClusterInit(inputData.clusterScreenSpaceUV, inputData.positionWS, 0);
     [loop] while (ClusterNext(it, entityIndex))
