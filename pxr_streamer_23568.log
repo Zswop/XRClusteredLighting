@@ -1,6 +1,0 @@
-[2023-02-01 15:46:05.675] [pxr_streamer] [info] ***********  Log Begin **********
-[2023-02-01 15:46:05.675] [pxr_streamer] [info] process id= 23568
-[2023-02-01 15:46:05.675] [pxr_streamer] [error] rpc_terminal.cpp:37 operator (): connect failed, error= 由于目标计算机积极拒绝，无法连接。, this = 0x534d6590
-[2023-02-01 15:46:05.675] [pxr_streamer] [error] rpc_terminal.h:50 Call: invalid rpc_client_, msg = Hello, this = 0x534d6590
-[2023-02-01 15:46:05.675] [pxr_streamer] [error] rpc_terminal.h:50 Call: invalid rpc_client_, msg = QueryRemoteTerminals, this = 0x534d6590
-[2023-02-01 15:46:10.955] [pxr_streamer] [error] rpc_terminal.cpp:37 operator (): connect failed, error= 由于目标计算机积极拒绝，无法连接。, this = 0x534d6590
