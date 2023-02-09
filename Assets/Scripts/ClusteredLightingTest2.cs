@@ -1,10 +1,10 @@
-using System;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
 
-public class ClusteredLightingTest : MonoBehaviour
+public class ClusteredLightingTest2 : MonoBehaviour
 {
     [SerializeField]
     InputActionProperty m_MoveAction;
@@ -19,54 +19,39 @@ public class ClusteredLightingTest : MonoBehaviour
 
     public Button funcBtn;
     
-    public Transform prefab;
-    
     [Header("Camera")][Range(0, 1)]
     public int renderIndex = 0;
-    
-    [Header("Procedural")]
-    public bool procedural = true;
-    
-    public int instances = 1000;
-
-    public float radius = 5f;
-
-    public int lightNum = 32;
-
-    public float lightRange = 1.0f;
-    
-    public float lightIntensity = 1.0f;
 
     private Camera curCamera;
     private UniversalAdditionalCameraData additionalCameraData;
     private int curRenderIndex;
+
+    private float _curTime = 0;
+    private List<Light> lights = new List<Light>();
     
     void Start()
     {
-        if (procedural)
+        //if (procedural)
         {
-            for (int i = 0; i < instances; i++) 
+            for (int i = 0; i < 8; i++)
             {
-                Transform t = Instantiate(prefab);
-                t.localPosition = UnityEngine.Random.insideUnitSphere * radius;
-                t.SetParent(transform);
-            }
-        
-            prefab.gameObject.SetActive(false);
-        
-            for (int i = 0; i < lightNum; i++) 
-            {
+                int row = i / 4;
+                int colume = i % 4;
+                int lightRange = 2;
+                
                 var go = new GameObject();
-                go.transform.localPosition = UnityEngine.Random.insideUnitSphere * radius;
-                go.transform.SetParent(transform);
+                go.transform.localPosition = new Vector3(2 * (colume - 1.5f) * lightRange, 1f, 2 * (row - 0.5f) * lightRange);
+                go.transform.SetParent(transform, false);
 
                 var l = go.AddComponent<Light>();
                 l.type = LightType.Point;
                 l.range = lightRange;
-                l.intensity = lightIntensity;
-
+                l.intensity = 10;
+                
                 var c = UnityEngine.Random.insideUnitSphere;
                 l.color = new Color(c.x, c.y, c.z, 1.0f);
+                
+                lights.Add(l);
             }
         }
 
