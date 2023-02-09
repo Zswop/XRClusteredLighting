@@ -91,8 +91,6 @@ namespace UnityEngine.Rendering.Universal
         Dictionary<int, int> m_XrWarningShown = new Dictionary<int, int>(8);
         List<int> m_KeysToRemove = new List<int>(8);
 
-        public static bool useEyePullBack = true;
-
         internal struct InitParams
         {
             public LightCookieManager lightCookieManager;
@@ -193,6 +191,15 @@ namespace UnityEngine.Rendering.Universal
         internal bool useClusteredRendering => m_UseClusteredRendering;
             
         static int AlignByteCount(int count, int align) => align * ((count + align - 1) / align);
+
+        static Vector3 GetCameraPositionFromViewMatrix(ref Matrix4x4 v)
+        {
+            Vector3 vector3;
+            vector3.x = (float) -((double) v.m00 * (double) v.m03 + (double) v.m10 * (double) v.m13 + (double) v.m20 * (double) v.m23);
+            vector3.y = (float) -((double) v.m01 * (double) v.m03 + (double) v.m11 * (double) v.m13 + (double) v.m21 * (double) v.m23);
+            vector3.z = (float) -((double) v.m02 * (double) v.m03 + (double) v.m12 * (double) v.m13 + (double) v.m22 * (double) v.m23);
+            return vector3;
+        }
         
         static void GetClusteringParameters(ref CameraData cameraData, out float nearClipPlane, out float farClipPlane, out Vector3 worldSpaceCameraPos,
             out Matrix4x4 viewMatrix, out Matrix4x4 projMatrix)
@@ -200,12 +207,21 @@ namespace UnityEngine.Rendering.Universal
             var camera = cameraData.camera;
             
 #if ENABLE_VR && ENABLE_XR_MODULE
-            if (cameraData.xr.enabled && cameraData.xr.singlePassEnabled && useEyePullBack)
+            if (cameraData.xr.enabled && cameraData.xr.singlePassEnabled)
             {
                 float fieldOfView = camera.fieldOfView;
                 float aspectRatio = cameraData.aspectRatio;
-                float separation = camera.stereoSeparation;  //separation: 0.022
-                separation = 0.064f;
+                
+                static float GetStereoSeparation(ref CameraData cameraData)
+                {
+                    var viewMatrix0 = cameraData.xr.GetViewMatrix(0);
+                    var viewMatrix1 = cameraData.xr.GetViewMatrix(1);
+                    var pos0 = GetCameraPositionFromViewMatrix(ref viewMatrix0);
+                    var pos1 = GetCameraPositionFromViewMatrix(ref viewMatrix1);
+                    return Vector3.Distance(pos0, pos1);
+                }
+                
+                float separation = GetStereoSeparation(ref cameraData);
                 
                 // The center eye frustum is the union of the other two frusta, pulled back and expanded.
                 // https://computergraphics.stackexchange.com/questions/1736/vr-and-frustum-culling
@@ -322,7 +338,7 @@ namespace UnityEngine.Rendering.Universal
 
             ref var worldToViewMatrix = ref m_ViewMatrix;
             ref var projectionMatrix = ref m_ProjMatrix;
-                
+
             m_ActualTileWidth = m_RequestedTileWidth >> 1;
             do
             {
