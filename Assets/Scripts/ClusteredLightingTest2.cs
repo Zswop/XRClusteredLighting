@@ -33,20 +33,20 @@ public class ClusteredLightingTest2 : MonoBehaviour
     {
         //if (procedural)
         {
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < 32; i++)
             {
-                int row = i / 4;
-                int colume = i % 4;
-                int lightRange = 2;
+                int row = i / 8;
+                int colume = i % 8;
+                int lightRange = 1;
                 
                 var go = new GameObject();
-                go.transform.localPosition = new Vector3(2 * (colume - 1.5f) * lightRange, 1f, 2 * (row - 0.5f) * lightRange);
+                go.transform.localPosition = new Vector3(2 * (colume - 3.5f) * lightRange, 0.5f, 2 * (row - 1.5f) * lightRange);
                 go.transform.SetParent(transform, false);
 
                 var l = go.AddComponent<Light>();
                 l.type = LightType.Point;
                 l.range = lightRange;
-                l.intensity = 10;
+                l.intensity = 5;
                 
                 var c = UnityEngine.Random.insideUnitSphere;
                 l.color = new Color(c.x, c.y, c.z, 1.0f);
