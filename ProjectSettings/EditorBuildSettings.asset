@@ -5,9 +5,12 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/SphereTest.unity
     guid: d92014f6612997541aca3bfdb22afeea
+  - enabled: 1
+    path: Assets/Scenes/Test2.unity
+    guid: f3f3b992d0fa7ec4c94b3394a5fdce06
   m_configObjects:
     Unity.XR.PXR.Settings: {fileID: 11400000, guid: 676139592af1d3e43b4961b34bce223f,
       type: 2}

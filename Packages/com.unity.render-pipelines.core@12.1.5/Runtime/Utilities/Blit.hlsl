@@ -233,4 +233,20 @@ float4 FragBilinearAlphaToRGBA(Varyings input) : SV_Target
     return SAMPLE_TEXTURE2D_X_LOD(_BlitTexture, sampler_LinearRepeat, uv, _BlitMipLevel).aaaa;
 }
 
+float4 FragOctahedralProjectNearestRepeat(Varyings input) : SV_Target
+{
+    UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
+    float2 uv = RepeatOctahedralUV(input.texcoord.x, input.texcoord.y);
+    float3 dir = UnpackNormalOctQuadEncode(2.0f * uv - 1.0f);
+    return float4(SAMPLE_TEXTURECUBE_LOD(_BlitCubeTexture, sampler_PointRepeat, dir, _BlitMipLevel).rgb, 1);
+}
+
+float4 FragOctahedralProjectBilinearRepeat(Varyings input) : SV_Target
+{
+    UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
+    float2 uv = RepeatOctahedralUV(input.texcoord.x, input.texcoord.y);
+    float3 dir = UnpackNormalOctQuadEncode(2.0f * uv - 1.0f);
+    return float4(SAMPLE_TEXTURECUBE_LOD(_BlitCubeTexture, sampler_LinearRepeat, dir, _BlitMipLevel).rgb, 1);
+}
+
 #endif //UNITY_CORE_BLIT_INCLUDED

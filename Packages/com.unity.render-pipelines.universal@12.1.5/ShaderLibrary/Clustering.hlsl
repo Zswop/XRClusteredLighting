@@ -67,9 +67,11 @@ CBUFFER_END
     #define COMPUTE_CLUSTER_COORD_PIXEL
 #endif
 
+#if defined(USING_FP_CONSTANTS)
 float3 _FPCameraPosWS;
 float4x4 _FPViewMatrix;
 float4x4 _FPViewProjMatrix;
+#endif
 
 // Select uint4 component by index.
 // Helper to improve codegen for 2d indexing (data[x][y])
@@ -113,8 +115,11 @@ uint URP_FirstBitLow(uint m)
 
 float4 TransformWorldToClusterCoord(float3 positionWS)
 {
+#if defined(USING_FP_CONSTANTS)
     float4 posCS = mul(_FPViewProjMatrix, float4(positionWS, 1.0));
-    //float4 posCS = mul(GetWorldToHClipMatrix(), float4(positionWS, 1.0));
+#else
+    float4 posCS = mul(GetWorldToHClipMatrix(), float4(positionWS, 1.0));
+#endif
     
     float4 ndc = posCS * 0.5f;
     ndc.xy = float2(ndc.x, ndc.y * _ProjectionParams.x) + ndc.w;

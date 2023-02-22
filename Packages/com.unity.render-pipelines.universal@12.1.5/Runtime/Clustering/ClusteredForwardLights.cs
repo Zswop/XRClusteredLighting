@@ -201,6 +201,8 @@ namespace UnityEngine.Rendering.Universal
             return vector3;
         }
         
+        static float m_Separation = 0.0f;
+        
         static void GetClusteringParameters(ref CameraData cameraData, out float nearClipPlane, out float farClipPlane, out Vector3 worldSpaceCameraPos,
             out Matrix4x4 viewMatrix, out Matrix4x4 projMatrix)
         {
@@ -221,11 +223,15 @@ namespace UnityEngine.Rendering.Universal
                     return Vector3.Distance(pos0, pos1);
                 }
                 
-                float separation = GetStereoSeparation(ref cameraData);
+                if (m_Separation == 0)
+                {
+                    m_Separation = GetStereoSeparation(ref cameraData);
+                    Debug.Log($"Real separation: { m_Separation }, camera provided separation: { camera.stereoSeparation }");
+                }
                 
                 // The center eye frustum is the union of the other two frusta, pulled back and expanded.
                 // https://computergraphics.stackexchange.com/questions/1736/vr-and-frustum-culling
-                float eyePullBack = 0.5f * separation / (Mathf.Tan(Mathf.Deg2Rad * (0.5f * fieldOfView)) * aspectRatio);
+                float eyePullBack = 0.5f * m_Separation / (Mathf.Tan(Mathf.Deg2Rad * (0.5f * fieldOfView)) * aspectRatio);
 
                 nearClipPlane = camera.nearClipPlane + eyePullBack;
                 farClipPlane = camera.farClipPlane + eyePullBack;
@@ -482,7 +488,7 @@ namespace UnityEngine.Rendering.Universal
                     
 #if ENABLE_VR && ENABLE_XR_MODULE
                     ref CameraData cameraData = ref renderingData.cameraData;
-                    //if (cameraData.xr.enabled && cameraData.xr.singlePassEnabled)
+                    if (cameraData.xr.enabled && cameraData.xr.singlePassEnabled)
                     {
                         //This contains platform specific changes to handle y-flip and reverse z.
                         var gpuProjMatrix = GL.GetGPUProjectionMatrix(m_ProjMatrix, cameraData.IsCameraProjectionMatrixFlipped());
